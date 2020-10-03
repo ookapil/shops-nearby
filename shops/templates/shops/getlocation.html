@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Get geolocation</title>
+</head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js">
+</script>
+<body>
+	<button type= "submit" onclick="getLocation()">Try It</button>
+	<button type= "submit" class="btn">Get It</button>
+	<p id="demo"></p>
+	
+	<script>
+		var x = document.getElementById("demo");
+		function getLocation() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(showPosition);
+				
+			}
+			else { 
+				x.innerHTML = "Geolocation is not supported by this browser.";
+			}
+		}
+
+		function showPosition(position) {
+			const lat= position.coords.latitude
+			const lon=position.coords.longitude
+			var position={"latitude":lat, "longitude": lon}
+			x.innerHTML = "Latitude: " + position.latitude + 
+			"<br>Longitude: " + position.longitude;
+			document.getElementById('output').innerHTML = lat;
+			savedata(position)
+		}
+
+
+		// for csrf token of ajax post call
+
+		function getCookie(name) {
+			var cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++) {
+					var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            		if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            		cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            		break;
+            		}
+        		}
+    	}
+    	return cookieValue;
+		}
+		var csrftoken = getCookie('csrftoken');
+
+		function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			}
+		});
+
+
+		function savedata(position){
+			console.log(position)
+			$( document ).ready(function() {
+				console.log(position)
+				$(".btn").click(function() {
+					console.log(position)
+					var lat=position.latitude
+					var lon=position.longitude
+					console.log(lat,lon)
+					$.ajax({
+						url: '/geo/update_position/',
+						data: {
+							'lat': lat,
+							'lon':lon,
+
+						},
+						type: 'POST',
+						method:'POST',
+						success:function(){
+							alert("lat")
+						}
+						}).done(function(response){
+							console.log(response)
+						});
+				})
+			});
+	}
+
+
+
+
+
+
+	</script>
+		<p id="output" >This is jquery output</p>
+		<form action="#" method="POST">
+			{% csrf_token %}
+			<input type="number",  name="lat" value= "5" id="output" ></p>
+		</form>
+
+#checking whether the jquery is working or not
+		<script>
+			$(document).ready(function() {
+				var myElements = $("#output");
+				$("#demo").text("The text in the first paragraph is: " + myElements[0].innerHTML);
+			});
+		</script>
+
+
+		<p id="out" >This is jquery</p>
+
+
+		
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Nearby Shops</title>
+</head>
+<body>
+	<h1>Nearby Shops</h1>
+	{% if shops %}
+	<ul>
+		{% for shop in shops %}
+			<li>
+				{{ shop.name }} : {{ shop.distance }}
+			</li>
+			{% endfor %}
+	</ul>
+	{% endif %}
+</body>
+</html>
